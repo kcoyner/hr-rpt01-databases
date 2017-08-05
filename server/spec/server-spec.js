@@ -6,44 +6,44 @@ var request = require('request'); // You might need to npm install the request m
 var expect = require('chai').expect;
 
 describe('Persistent Node Chat Server', function() {
-  var dbConnection;
+var dbConnection;
 
-  beforeEach(function(done) {
-    dbConnection = mysql.createConnection({
-      user: 'root',
-      password: '',
-      database: 'chat'
-    });
-    dbConnection.connect();
-
-       var tablename = ""; // TODO: fill this out
-
-    /* Empty the db table before each test so that multiple tests
-     * (or repeated runs of the tests) won't screw each other up: */
-    dbConnection.query('truncate ' + tablename, done);
+beforeEach(function(done) {
+  dbConnection = mysql.createConnection({
+    user: 'root',
+    password: '',
+    database: 'chat'
   });
+  dbConnection.connect();
 
-  afterEach(function() {
-    dbConnection.end();
-  });
+  var tablename = "messages"; // TODO: fill this out
 
-  it('Should insert posted messages to the DB', function(done) {
-    // Post the user to the chat server.
+  /* Empty the db table before each test so that multiple tests
+   * (or repeated runs of the tests) won't screw each other up: */
+  dbConnection.query('truncate ' + tablename, done);
+});
+
+afterEach(function() {
+  dbConnection.end();
+});
+
+it('Should insert posted messages to the DB', function(done) {
+  // Post the user to the chat server.
+  request({
+    method: 'POST',
+    uri: 'http://127.0.0.1:3000/classes/users',
+    json: { username: 'Valjean' }
+  }, function () {
+    // Post a message to the node chat server:
     request({
       method: 'POST',
-      uri: 'http://127.0.0.1:3000/classes/users',
-      json: { username: 'Valjean' }
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Valjean',
+        message: 'In mercy\'s name, three days is all I need.',
+        roomname: 'Hello'
+      }
     }, function () {
-      // Post a message to the node chat server:
-      request({
-        method: 'POST',
-        uri: 'http://127.0.0.1:3000/classes/messages',
-        json: {
-          username: 'Valjean',
-          message: 'In mercy\'s name, three days is all I need.',
-          roomname: 'Hello'
-        }
-      }, function () {
         // Now if we look in the database, we should find the
         // posted message there.
 
@@ -87,3 +87,4 @@ describe('Persistent Node Chat Server', function() {
     });
   });
 });
+
