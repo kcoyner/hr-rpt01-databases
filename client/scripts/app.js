@@ -3,7 +3,7 @@ var app = {
 
   //TODO: The current 'handleUsernameClick' function just toggles the class 'friend'
   //to all messages sent by the user
-  server: 'http://127.0.0.1:3000',
+  server: 'http://127.0.0.1:3000/classes/messages',
   username: 'anonymous',
   roomname: 'lobby',
   lastMessageId: 0,
@@ -33,7 +33,7 @@ var app = {
     // setInterval(function() {
     //   app.fetch(true);
     // }, 3000);
-  // },
+  },
 
   send: function(message) {
     app.startSpinner();
@@ -234,3 +234,4 @@ var app = {
     $('form input[type=submit]').attr('disabled', null);
   }
 };
+

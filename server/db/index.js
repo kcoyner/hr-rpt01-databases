@@ -11,4 +11,3 @@ var dbConnection = mysql.createConnection({
 });
 
 module.exports = dbConnection;
-

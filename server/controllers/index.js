@@ -5,7 +5,7 @@ module.exports = {
     get: function (req, res) {
       //console.log(req.url);
       models.messages.get(function(results){
-        res.end(results[0].body);
+        res.end(JSON.stringify({results: results}));
       });
 
     }, // a function which handles a get request for all messages
