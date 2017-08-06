@@ -22,13 +22,8 @@ module.exports = {
         //console.log('message: ', message);
       }).on('end', function() {
 
-        var test = JSON.parse(message);
-        console.log(test);
-        // var test = JSON.parse(message);
-        // console.log(test);
-        // models.messages.post(function(message) {
-        // //  lines 31-33
-        // });
+        message = JSON.parse(message);
+        models.messages.post(message, function(){});
         headers['Content-Type'] = 'application/json';
         res.writeHead(200, headers);
         res.end('test');
@@ -43,4 +38,3 @@ module.exports = {
   }
 
 };
-
