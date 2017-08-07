@@ -6,44 +6,49 @@ var request = require('request'); // You might need to npm install the request m
 var expect = require('chai').expect;
 
 describe('Persistent Node Chat Server', function() {
-var dbConnection;
+  var dbConnection;
 
-beforeEach(function(done) {
-  dbConnection = mysql.createConnection({
-    user: 'root',
-    password: '',
-    database: 'chat'
+  beforeEach(function(done) {
+    dbConnection = mysql.createConnection({
+      user: 'kevinroot',
+      password: 'codeDoggy',
+      database: 'chat',
+      host: 'hr-rpt01.cybvxu5jsrlj.us-east-1.rds.amazonaws.com'
+    });
+    dbConnection.connect();
+
+    var tablename = "messages"; // TODO: fill this out
+
+    /* Empty the db table before each test so that multiple tests
+     * (or repeated runs of the tests) won't screw each other up: */
+    dbConnection.query('truncate ' + tablename, done);
   });
-  dbConnection.connect();
 
-  var tablename = "messages"; // TODO: fill this out
+  afterEach(function() {
+    dbConnection.end();
+  });
 
-  /* Empty the db table before each test so that multiple tests
-   * (or repeated runs of the tests) won't screw each other up: */
-//  dbConnection.query('truncate ' + tablename, done);
-});
-
-afterEach(function() {
-  dbConnection.end();
-});
-
-it('Should insert posted messages to the DB', function(done) {
-  // Post the user to the chat server.
-  request({
-    method: 'POST',
-    uri: 'http://127.0.0.1:3000/classes/users',
-    json: { username: 'Valjean' }
-  }, function () {
-    // Post a message to the node chat server:
+  it('Should insert posted messages to the DB', function(done) {
+    // Post the user to the chat server.
+    console.log('line 32');
     request({
       method: 'POST',
-      uri: 'http://127.0.0.1:3000/classes/messages',
+      uri: 'http://127.0.0.1:3000/classes/users',
       json: {
-        username: 'Valjean',
-        message: 'In mercy\'s name, three days is all I need.',
-        roomname: 'Hello'
+        username: 'Valjean'
       }
-    }, function () {
+    }, function() {
+      // Post a message to the node chat server:
+      console('line 39');
+      request({
+        method: 'POST',
+        uri: 'http://127.0.0.1:3000/classes/messages',
+        json: {
+          username: 'Valjean',
+          text: 'In mercy\'s name, three days is all I need.',
+          roomname: 'Hello'
+        }
+      }, function() {
         // Now if we look in the database, we should find the
         // posted message there.
 
@@ -55,7 +60,7 @@ it('Should insert posted messages to the DB', function(done) {
         dbConnection.query(queryString, queryArgs, function(err, results) {
           // Should have one result:
           expect(results.length).to.equal(1);
-
+          console('results:', results);
           // TODO: If you don't have a column named text, change this test.
           expect(results[0].text).to.equal('In mercy\'s name, three days is all I need.');
 
@@ -67,23 +72,27 @@ it('Should insert posted messages to the DB', function(done) {
 
   it('Should output all messages from the DB', function(done) {
     // Let's insert a message into the db
-       var queryString = "";
-       var queryArgs = [];
+    var queryString = "INSERT into messages (`text`, `rid_rooms`, `uid_users`) VALUES ('Men like you can never change!', 1, 1)";
+    var queryArgs = [];
     // TODO - The exact query string and query args to use
     // here depend on the schema you design, so I'll leave
     // them up to you. */
 
     dbConnection.query(queryString, queryArgs, function(err) {
-      if (err) { throw err; }
+      if (err) {
+        throw err;
+      }
 
       // Now query the Node chat server and see if it returns
       // the message we just inserted:
       request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
         var messageLog = JSON.parse(body);
-        expect(messageLog[0].text).to.equal('Men like you can never change!');
-        expect(messageLog[0].roomname).to.equal('main');
+        console.log('messageLog', messageLog.results[0].text);
+        expect(messageLog.results[0].text).to.equal('Men like you can never change!');
+        expect(messageLog.results[0].roomname).to.equal('main');
         done();
       });
     });
   });
 });
+

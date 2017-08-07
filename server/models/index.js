@@ -73,30 +73,51 @@ module.exports = {
 
 
     post: function(message, callback) {
-        getUserID(message.username, function(userID) {
-          getRoomID(message.roomname, function(roomID) {
-            var queryString = 'INSERT into messages (`uid_users`, `rid_rooms`, `text`) VALUES (?, ?, ?)';
-            var queryArgs = [userID, roomID, message.text];
-            var myQuery = db.query(queryString, queryArgs, function(err, results) {
-            console.log(myQuery.sql);
-              if (err) {
-                console.log('Query error:', err);
-              } else {
-                callback();
-              }
-            });
+      getUserID(message.username, function(userID) {
+        getRoomID(message.roomname, function(roomID) {
+          var queryString = 'INSERT into messages (`uid_users`, `rid_rooms`, `text`) VALUES (?, ?, ?)';
+          var queryArgs = [userID, roomID, message.text];
+          var myQuery = db.query(queryString, queryArgs, function(err, results) {
+            if (err) {
+              console.log('Query error:', err);
+            } else {
+              callback();
+            }
           });
         });
+      });
 
-        // read object and check if user exists in table
-        //  sql insert
-      } // a function which can be used to insert a message into the database
+      // read object and check if user exists in table
+      //  sql insert
+    } // a function which can be used to insert a message into the database
   },
 
   users: {
     // Ditto as above.
-    get: function() {},
-    post: function() {}
+    get: function(callback) {
+      var queryString = 'SELECT * FROM users';
+      db.query(queryString, function(err, results){
+        if (err) {
+          console.log('Query users error:', err);
+        } else {
+          callback(results);
+        }
+      });
+    },
+    post: function(user, callback) {
+      console.log('inside user post model');
+      // var queryString = 'INSERT INTO users (`username`) VALUES (?)';
+      var queryString = 'INSERT INTO users (`username`) VALUES '+ user;
+      // var queryArgs = [user];
+      // db.query(queryString, queryArgs, function(err, user){
+      db.query(queryString, function(err, user){
+        if (err) {
+          console.log('Query user post error:', err);
+        } else {
+          callback();
+        }
+      });
+    }
   }
 };
 
