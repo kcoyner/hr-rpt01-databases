@@ -87,4 +87,3 @@ it('Should insert posted messages to the DB', function(done) {
     });
   });
 });
-

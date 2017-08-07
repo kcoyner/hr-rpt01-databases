@@ -51,7 +51,7 @@ var app = {
         app.fetch();
       },
       error: function (error) {
-        console.error('chatterbox: Failed to send message', error);
+        console.error('chatterbox: Failed to send message', message, error);
       }
     });
   },
@@ -218,7 +218,7 @@ var app = {
       roomname: app.roomname || 'lobby'
     };
 
-    app.send(message);
+    app.send(JSON.stringify(message));
 
     // Stop the form from submitting
     event.preventDefault();
@@ -234,4 +234,3 @@ var app = {
     $('form input[type=submit]').attr('disabled', null);
   }
 };
-
