@@ -23,18 +23,41 @@ module.exports = {
       }).on('end', function() {
 
         message = JSON.parse(message);
-        models.messages.post(message, function(){});
-        headers['Content-Type'] = 'application/json';
-        res.writeHead(200, headers);
-        res.end('test');
+        models.messages.post(message, function() {
+          headers['Content-Type'] = 'application/json';
+          res.writeHead(201, headers);
+          res.end(JSON.stringify(message));
+        });
       }); // a function which handles posting a message to the database
     }
   },
 
   users: {
     // Ditto as above
-    get: function (req, res) {},
-    post: function (req, res) {}
-  }
+    get: function (req, res) {
+      //console.log(req.url);
+      models.users.get(function(results){
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify({results: results}));
+      });
+    },
 
+    post: function (req, res) {
+      console.log('inside user post controller');
+      var user = '';
+      var headers = {};
+      req.on('data', function(chunk) {
+        user += chunk;
+      }).on('end', function() {
+
+        user = JSON.parse(user);
+        models.users.post(user, function() {
+          headers['Content-Type'] = 'application/json';
+          res.writeHead(201, headers);
+          res.end(JSON.stringify('success'));
+        });
+      }); // a function which handles posting a user to the database
+    }
+  }
 };
+

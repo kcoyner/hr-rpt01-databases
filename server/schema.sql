@@ -58,4 +58,3 @@ ALTER TABLE `messages` ADD FOREIGN KEY (uid_users) REFERENCES `users` (`uid`);
 ALTER TABLE `messages` ADD FOREIGN KEY (rid_rooms) REFERENCES `rooms` (`rid`);
 ALTER TABLE `users_rooms` ADD FOREIGN KEY (uid_users) REFERENCES `users` (`uid`);
 ALTER TABLE `users_rooms` ADD FOREIGN KEY (rid_rooms) REFERENCES `rooms` (`rid`);
-
