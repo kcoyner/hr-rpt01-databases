@@ -3,9 +3,7 @@ var models = require('../models');
 module.exports = {
   messages: {
     get: function (req, res) {
-      //console.log(req.url);
       models.messages.get(function(results){
-        //res.writeHead(200, {'Content-Type': 'text/html'});
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end(JSON.stringify({results: results}));
       });
@@ -17,26 +15,33 @@ module.exports = {
     post: function (req, res) {
       var message = '';
       var headers = {};
-      req.on('data', function(chunk) {
-        message += chunk;
-        //console.log('message: ', message);
-      }).on('end', function() {
-
-        message = JSON.parse(message);
-        models.messages.post(message, function() {
+      var messageBody = req.body;
+      if (Object.keys(messageBody).length > 0) {
+        models.messages.post(messageBody, function() {
           headers['Content-Type'] = 'application/json';
           res.writeHead(201, headers);
-          res.end(JSON.stringify(message));
+          res.end(JSON.stringify(messageBody));
         });
-      }); // a function which handles posting a message to the database
+      } else {
+        req.on('data', function(chunk) {
+          message += chunk;
+        }).on('end', function() {
+
+          message = JSON.parse(message);
+          models.messages.post(message, function() {
+            headers['Content-Type'] = 'application/json';
+            res.writeHead(201, headers);
+            res.end(JSON.stringify(message));
+          });
+        });
+      } // a function which handles posting a message to the database
     }
   },
 
   users: {
     // Ditto as above
     get: function (req, res) {
-      //console.log(req.url);
-      models.users.get(function(results){
+      models.users.get(function(results) {
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end(JSON.stringify({results: results}));
       });
@@ -46,17 +51,24 @@ module.exports = {
       console.log('inside user post controller');
       var user = '';
       var headers = {};
-      req.on('data', function(chunk) {
-        user += chunk;
-      }).on('end', function() {
+      var username = req.body.username;
+      models.users.post(username, function() {
+        //console.log('inside user post controller db', req.body);
+        headers['Content-Type'] = 'application/json';
+        res.writeHead(201, headers);
+        res.end(JSON.stringify('success'));
+      });
+      // req.on('data', function(chunk) {
+      //   user += chunk;
+      // }).on('end', function() {
 
-        user = JSON.parse(user);
-        models.users.post(user, function() {
-          headers['Content-Type'] = 'application/json';
-          res.writeHead(201, headers);
-          res.end(JSON.stringify('success'));
-        });
-      }); // a function which handles posting a user to the database
+      //   user = JSON.parse(user);
+      //   models.users.post(user, function() {
+      //     headers['Content-Type'] = 'application/json';
+      //     res.writeHead(201, headers);
+      //     res.end(JSON.stringify('success'));
+      //   });
+      // }); // a function which handles posting a user to the database
     }
   }
 };
