@@ -4,38 +4,34 @@ var sequelize = require('sequelize');
 
 module.exports = {
   messages: {
-    get: function (req, res) {
-      // models.messages.get(function(results){
-        var results = '';
-      dbSquel.Messages.findAll(
-        {
-          attributes: [
-            'text',
-            'roomId',
-            'userId',
-            [sequelize.col('username'), 'username']
-            //sequelize.col('dbSquel.Users.username')
-          ],
-          include: [{
-            model: dbSquel.Users,
-            attributes: ['username']
-          }]
-        }
-      ).
-        then(text => results = text).
-        then( () => {
-            // loop through the resulrs array
-            // for each object find the 'user' key which is it selft an object
-            // replace this object with the actual value of its username key
-            res.writeHead(200, {'Content-Type': 'application/json'});
-            res.end(JSON.stringify({results: results}))
-          }
-        );
+    get: function(req, res) {
+      dbSquel.Messages.findAll({
+        attributes: [
+          'text',
+          [sequelize.col('username'), 'username'],
+          [sequelize.col('roomname'), 'roomname']
+        ],
+        include: [{
+          model: dbSquel.Users,
+          attributes: []
+        }, {
+          model: dbSquel.Rooms,
+          attributes: []
+        }]
+      }).
+      then(results => {
+        res.writeHead(200, {
+          'Content-Type': 'application/json'
+        });
+        res.end(JSON.stringify({
+          results: results
+        }));
+      });
     }, // a function which handles a get request for all messages
 
 
 
-    post: function (req, res) {
+    post: function(req, res) {
       var message = '';
       var headers = {};
       var messageBody = req.body;
@@ -63,14 +59,18 @@ module.exports = {
 
   users: {
     // Ditto as above
-    get: function (req, res) {
+    get: function(req, res) {
       models.users.get(function(results) {
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify({results: results}));
+        res.writeHead(200, {
+          'Content-Type': 'application/json'
+        });
+        res.end(JSON.stringify({
+          results: results
+        }));
       });
     },
 
-    post: function (req, res) {
+    post: function(req, res) {
       console.log('inside user post controller');
       var user = '';
       var headers = {};

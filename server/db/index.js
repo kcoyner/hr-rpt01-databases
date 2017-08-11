@@ -35,6 +35,7 @@ const Rooms = db.define('rooms', {
 Users.hasMany(Messages);
 Messages.belongsTo(Users);
 Rooms.hasMany(Messages);
+Messages.belongsTo(Rooms);
 
 // Users.sync().then(() => {
 //   // Table created
