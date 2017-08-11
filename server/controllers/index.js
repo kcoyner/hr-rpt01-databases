@@ -1,13 +1,36 @@
 var models = require('../models');
+var dbSquel = require('../db/index.js');
+var sequelize = require('sequelize');
 
 module.exports = {
   messages: {
     get: function (req, res) {
-      models.messages.get(function(results){
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify({results: results}));
-      });
-
+      // models.messages.get(function(results){
+        var results = '';
+      dbSquel.Messages.findAll(
+        {
+          attributes: [
+            'text',
+            'roomId',
+            'userId',
+            [sequelize.col('username'), 'username']
+            //sequelize.col('dbSquel.Users.username')
+          ],
+          include: [{
+            model: dbSquel.Users,
+            attributes: ['username']
+          }]
+        }
+      ).
+        then(text => results = text).
+        then( () => {
+            // loop through the resulrs array
+            // for each object find the 'user' key which is it selft an object
+            // replace this object with the actual value of its username key
+            res.writeHead(200, {'Content-Type': 'application/json'});
+            res.end(JSON.stringify({results: results}))
+          }
+        );
     }, // a function which handles a get request for all messages
 
 
@@ -72,3 +95,4 @@ module.exports = {
     }
   }
 };
+

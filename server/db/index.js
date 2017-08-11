@@ -33,6 +33,7 @@ const Rooms = db.define('rooms', {
 });
 
 Users.hasMany(Messages);
+Messages.belongsTo(Users);
 Rooms.hasMany(Messages);
 
 // Users.sync().then(() => {
@@ -47,8 +48,8 @@ Rooms.sync();
 
 Messages.sync();
 
-Messages.findAll().
-then(text => {console.log(text)});
+// Messages.findAll().
+// then(text => {console.log("Messages: ", text)});
 
 var dbConnection = mysql.createConnection({
   user: 'kevinroot',
@@ -57,5 +58,7 @@ var dbConnection = mysql.createConnection({
   database: 'chat'
 });
 
-module.exports = dbConnection;
+var dbSquel = { Messages: Messages, Rooms: Rooms, Users: Users };
 
+module.exports = dbConnection;
+module.exports = dbSquel;
